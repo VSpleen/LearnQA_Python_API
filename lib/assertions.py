@@ -11,12 +11,39 @@ class Assertions:
         assert response_as_dict[name]==expected_value, error_message
 
     @staticmethod
-    def assert_json_has_value (response: Response, name):
+    def assert_json_has_key (response: Response, name):
         try:
             response_as_dict = response.json()
         except json.JSONDecodeError:
             assert False, f"Получен ответ не в формате json. Полученный ответ - {response.text}"
         assert name in response_as_dict, f"В ответе отсутствует ключ {name}"
+
+    @staticmethod
+    def assert_json_has_keys (response: Response, names:list):
+        try:
+            response_as_dict = response.json()
+        except json.JSONDecodeError:
+            assert False, f"Получен ответ не в формате json. Полученный ответ - {response.text}"
+        for every in names:
+            assert every in response_as_dict, f"В json отсутствует ключ {every}"
+
+    @staticmethod
+    def assert_json_has_not_key (response: Response, name):
+        try:
+            response_as_dict = response.json()
+        except json.JSONDecodeError:
+            assert False, f"Получен ответ не в формате json. Полученный ответ - {response.text}"
+        assert name not in response_as_dict, f"В ответе должен был отсутствовать ключ {name}, но он есть"
+
+    @staticmethod
+    def assert_json_has_not_keys (response: Response, names:list):
+        try:
+            response_as_dict = response.json()
+        except json.JSONDecodeError:
+            assert False, f"Получен ответ не в формате json. Полученный ответ - {response.text}"
+        for every in names:
+            assert every not in response_as_dict, f"В ответе должен был отсутствовать ключ {every}, но он есть"
+
 
     @staticmethod
     def assert_code_status(response: Response, expected_status_code):
@@ -29,3 +56,5 @@ class Assertions:
         assert response.content.decode("utf-8") == expected_contetnt, \
             f"Полученный контент отличается от ожидаемого, получено {response.content.decode('utf-8')}" \
             f"Ожидалось {expected_contetnt}"
+
+
