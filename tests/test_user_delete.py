@@ -1,8 +1,13 @@
 from lib.assertions import Assertions
 from lib.base_case import BaseCase
 from lib.my_requests import MyRequests
+import allure
 
+@allure.epic("Кейсы удаления пользователя")
 class TestUserDelete(BaseCase):
+
+
+    @allure.description("Кейс удаления защищенного пользователя")
     def test_delete_second_user(self):
         auth_data = {
             'email': 'vinkotov@example.com',
@@ -22,6 +27,7 @@ class TestUserDelete(BaseCase):
         Assertions.assert_code_status(response3, 200)
         Assertions.assert_json_value_by_name(response3, "id", '2', "Пользователь был удален")
 
+    @allure.description("Кейс успешного удаления пользователя")
     def test_delete_user_successfully(self):
         # registration
         register_data = self.prepare_registration_data()
@@ -55,6 +61,7 @@ class TestUserDelete(BaseCase):
         Assertions.assert_content_value_utf_8(response4, 'User not found')
 
 
+    @allure.description("Кейс удаления пользователя с чужой авторизацией")
     def test_delete_another_user(self):
         # registration
         register_data = self.prepare_registration_data()

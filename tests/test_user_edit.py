@@ -1,7 +1,9 @@
 from lib.my_requests import MyRequests
 from lib.assertions import Assertions
 from lib.base_case import BaseCase
+import allure
 
+@allure.epic("Кейсы редактирвания пользователя")
 class TestUserEdit(BaseCase):
     def setup(self):
         # registration
@@ -28,6 +30,7 @@ class TestUserEdit(BaseCase):
         self.headers = {"x-csrf-token": self.token}
 
 
+    @allure.description("Кейс успешного редактирования пользователя")
     def test_edit_user_successfully(self):
         #edit
         new_name = "Changed name"
@@ -45,6 +48,7 @@ class TestUserEdit(BaseCase):
         Assertions.assert_json_value_by_name(response4, "firstName", new_name, "Измененное имя отличается от ожидаемого")
 
 
+    @allure.description("Кейс редактирования пользователя без авторизации")
     def test_edit_user_without_auth(self):
         # edit
         new_name = "Changed name"
@@ -60,7 +64,7 @@ class TestUserEdit(BaseCase):
                                              "Имя отличается от изначально созданного")
 
 
-
+    @allure.description("Кейс редактирования пользователя с чужой авторизацией")
     def test_edit_user_by_another_user(self):
         #create another user
         register_data_for_second_user = self.prepare_registration_data()
@@ -107,6 +111,7 @@ class TestUserEdit(BaseCase):
                                              "Измененное имя отличается от ожидаемого")
 
 
+    @allure.description("Кейс редактирования пользователя с установкой некорректноого имейла")
     def test_edit_user_incorrect_email(self):
         #edit
         new_email = "someNamesomeDomain.com"
@@ -124,6 +129,7 @@ class TestUserEdit(BaseCase):
         Assertions.assert_json_value_by_name(response4, "email", self.email, "Измененное имя отличается от ожидаемого")
 
 
+    @allure.description("Кейс редактирования пользователя с установкой слишком короткого имени")
     def test_edit_user_too_short_name(self):
         #edit
         new_name = "C"
