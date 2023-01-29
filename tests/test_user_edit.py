@@ -1,4 +1,4 @@
-import requests
+from lib.my_requests import MyRequests
 from lib.assertions import Assertions
 from lib.base_case import BaseCase
 
@@ -6,7 +6,7 @@ class TestUserEdit(BaseCase):
     def setup(self):
         # registration
         register_data = self.prepare_registration_data()
-        response1 = requests.post("https://playground.learnqa.ru/api/user/", data=register_data)
+        response1 = MyRequests.post("user/", data=register_data)
 
         Assertions.assert_code_status(response1, 200)
         Assertions.assert_json_has_key(response1, "id")
@@ -21,7 +21,7 @@ class TestUserEdit(BaseCase):
             'email': self.email,
             'password': self.password
         }
-        response2 = requests.post("https://playground.learnqa.ru/api/user/login", data=login_data)
+        response2 = MyRequests.post("user/login", data=login_data)
         self.auth_sid = self.get_cookie(response2, "auth_sid")
         self.cookies = {"auth_sid": self.auth_sid}
         self.token = self.get_header(response2, "x-csrf-token")
@@ -31,14 +31,14 @@ class TestUserEdit(BaseCase):
     def test_edit_user_successfully(self):
         #edit
         new_name = "Changed name"
-        response3 = requests.put(f"https://playground.learnqa.ru/api/user/{self.user_id}",
+        response3 = MyRequests.put(f"user/{self.user_id}",
                                  data = {"firstName": new_name},
                                  headers = self.headers,
                                  cookies = self.cookies)
         Assertions.assert_code_status(response3, 200)
 
         #get
-        response4 = requests.get(f"https://playground.learnqa.ru/api/user/{self.user_id}",
+        response4 = MyRequests.get(f"user/{self.user_id}",
                                  headers=self.headers,
                                  cookies=self.cookies)
         Assertions.assert_code_status(response4, 200)
@@ -48,11 +48,11 @@ class TestUserEdit(BaseCase):
     def test_edit_user_without_auth(self):
         # edit
         new_name = "Changed name"
-        response3 = requests.put(f"https://playground.learnqa.ru/api/user/{self.user_id}",
+        response3 = MyRequests.put(f"user/{self.user_id}",
                                  data={"firstName": new_name})
         Assertions.assert_code_status(response3, 400)
         # get
-        response4 = requests.get(f"https://playground.learnqa.ru/api/user/{self.user_id}",
+        response4 = MyRequests.get(f"user/{self.user_id}",
                                  headers=self.headers,
                                  cookies=self.cookies)
         Assertions.assert_code_status(response4, 200)
@@ -64,7 +64,7 @@ class TestUserEdit(BaseCase):
     def test_edit_user_by_another_user(self):
         #create another user
         register_data_for_second_user = self.prepare_registration_data()
-        response3 = requests.post("https://playground.learnqa.ru/api/user/", data=register_data_for_second_user)
+        response3 = MyRequests.post("user/", data=register_data_for_second_user)
 
         Assertions.assert_code_status(response3, 200)
         Assertions.assert_json_has_key(response3, "id")
@@ -76,14 +76,14 @@ class TestUserEdit(BaseCase):
 
         #try to change another user
         new_name = "Changed name"
-        response4 = requests.put(f"https://playground.learnqa.ru/api/user/{another_user_id}",
+        response4 = MyRequests.put(f"user/{another_user_id}",
                                  data = {"firstName": new_name},
                                  headers = self.headers,
                                  cookies = self.cookies)
         Assertions.assert_code_status(response3, 200)
 
         #check current user's data
-        response4 = requests.get(f"https://playground.learnqa.ru/api/user/{self.user_id}",
+        response4 = MyRequests.get(f"user/{self.user_id}",
                                  headers=self.headers,
                                  cookies=self.cookies)
         Assertions.assert_code_status(response4, 200)
@@ -94,12 +94,12 @@ class TestUserEdit(BaseCase):
             'email': another_email,
             'password': another_password
         }
-        response5 = requests.post("https://playground.learnqa.ru/api/user/login", data=login_data_another_user)
+        response5 = MyRequests.post("user/login", data=login_data_another_user)
         another_auth_sid = self.get_cookie(response5, "auth_sid")
         another_cookies = {"auth_sid": another_auth_sid}
         another_token = self.get_header(response5, "x-csrf-token")
         another_headers = {"x-csrf-token": another_token}
-        response6 = requests.get(f"https://playground.learnqa.ru/api/user/{another_user_id}",
+        response6 = MyRequests.get(f"user/{another_user_id}",
                                  headers=another_headers,
                                  cookies=another_cookies)
         Assertions.assert_code_status(response6, 200)
@@ -110,14 +110,14 @@ class TestUserEdit(BaseCase):
     def test_edit_user_incorrect_email(self):
         #edit
         new_email = "someNamesomeDomain.com"
-        response3 = requests.put(f"https://playground.learnqa.ru/api/user/{self.user_id}",
+        response3 = MyRequests.put(f"user/{self.user_id}",
                                  data = {"email": new_email},
                                  headers = self.headers,
                                  cookies = self.cookies)
         Assertions.assert_code_status(response3, 400)
 
         #get
-        response4 = requests.get(f"https://playground.learnqa.ru/api/user/{self.user_id}",
+        response4 = MyRequests.get(f"user/{self.user_id}",
                                  headers=self.headers,
                                  cookies=self.cookies)
         Assertions.assert_code_status(response4, 200)
@@ -127,14 +127,14 @@ class TestUserEdit(BaseCase):
     def test_edit_user_too_short_name(self):
         #edit
         new_name = "C"
-        response3 = requests.put(f"https://playground.learnqa.ru/api/user/{self.user_id}",
+        response3 = MyRequests.put(f"user/{self.user_id}",
                                  data = {"firstName": new_name},
                                  headers = self.headers,
                                  cookies = self.cookies)
         Assertions.assert_code_status(response3, 400)
 
         #get
-        response4 = requests.get(f"https://playground.learnqa.ru/api/user/{self.user_id}",
+        response4 = MyRequests.get(f"user/{self.user_id}",
                                  headers=self.headers,
                                  cookies=self.cookies)
         Assertions.assert_code_status(response4, 200)
